@@ -7,7 +7,7 @@ async function start(): Promise<void> {
     return;
   }
 
-  console.log('Hello World');
+  console.log('NODE_ENV is', process.env.NODE_ENV);
 
   await setTimeout(250);
   await start();
