@@ -1,0 +1,42 @@
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+out/
+
+# Logs
+logs/
+log/
+*.log
+*.log.*
+
+# Env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+
+# Coverage and testing
+coverage/
+.nyc_output/
+
+# Docker
+docker-compose.override.yml
+.docker/
+*.pid
+*.seed
+*.pid.lock
+
+# Cache
+.cache/
+.cache-loader/
