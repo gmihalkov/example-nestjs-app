@@ -1,0 +1,12 @@
+{
+  "name": "example-nestjs-app",
+  "version": "1.0.0",
+  "description": "The Nest.js app example.",
+  "license": "ISC",
+  "author": "Gleb Mikhalkov",
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
