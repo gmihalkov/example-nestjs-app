@@ -2,8 +2,17 @@ import { ok } from 'node:assert';
 
 import { AppModule } from './app.module';
 
+/**
+ * Indicates that the application was started in the `dry-run` mode.
+ */
 const isDryRun = process.argv.includes('--dry-run');
 
+/**
+ * Returns a server's port from the environment variables.
+ *
+ * @returns
+ * A port number.
+ */
 function getPort(): number {
   const text = process.env.PORT;
   ok(text, new Error('The required "PORT" env variable is missing'));
@@ -21,6 +30,9 @@ function getPort(): number {
   return port;
 }
 
+/**
+ * The application entry point.
+ */
 (async () => {
   const app = await AppModule.createApp();
 
