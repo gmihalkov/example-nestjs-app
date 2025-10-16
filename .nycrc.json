@@ -1,0 +1,8 @@
+{
+  "all": true,
+  "instrument": true,
+  "require": ["ts-node/register"],
+  "include": ["src/**"],
+  "exclude": ["src/dotenv.ts", "src/tests/**", "src/**/index.ts", "**/*.test.ts"],
+  "extension": [".ts"]
+}
