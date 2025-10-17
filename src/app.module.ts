@@ -1,10 +1,14 @@
 import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
+import { HealthModule } from './modules/health';
+
 /**
  * The main application module.
  */
-@Module({})
+@Module({
+  imports: [HealthModule],
+})
 export class AppModule {
   /**
    * Creates and sets up the Nest.js application from this module.
@@ -22,7 +26,7 @@ export class AppModule {
    * @param app
    * The Nest.js application.
    */
-  private static setupApp(app: INestApplication): void {
+  public static setupApp(app: INestApplication): void {
     app.enableCors();
     app.enableShutdownHooks();
 
