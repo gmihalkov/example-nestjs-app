@@ -35,6 +35,9 @@ test('API /health', async (scope) => {
           'internet-connection': {
             status: 'up',
           },
+          database: {
+            status: 'up',
+          },
         },
       });
     });

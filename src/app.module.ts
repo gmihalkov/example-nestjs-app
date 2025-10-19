@@ -1,13 +1,33 @@
 import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ConfigModule } from '@/common/config';
+
+import { AppConfig } from './app.config';
 import { HealthModule } from './modules/health';
 
 /**
  * The main application module.
  */
 @Module({
-  imports: [HealthModule],
+  imports: [
+    ConfigModule.register([AppConfig]),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule.register([AppConfig])],
+      inject: [AppConfig],
+      useFactory: (config: AppConfig) => ({
+        type: 'postgres',
+        autoLoadEntities: true,
+        host: config.postgresHost,
+        port: config.postgresPort,
+        database: config.postgresDatabase,
+        username: config.postgresUsername,
+        password: config.postgresPassword,
+      }),
+    }),
+    HealthModule,
+  ],
 })
 export class AppModule {
   /**
@@ -28,7 +48,6 @@ export class AppModule {
    */
   public static setupApp(app: INestApplication): void {
     app.enableCors();
-    app.enableShutdownHooks();
 
     app.useGlobalPipes(
       new ValidationPipe({

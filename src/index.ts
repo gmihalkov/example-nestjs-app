@@ -1,34 +1,10 @@
-import { ok } from 'node:assert';
-
+import { AppConfig } from './app.config';
 import { AppModule } from './app.module';
 
 /**
  * Indicates that the application was started in the `dry-run` mode.
  */
 const isDryRun = process.argv.includes('--dry-run');
-
-/**
- * Returns a server's port from the environment variables.
- *
- * @returns
- * A port number.
- */
-function getPort(): number {
-  const text = process.env.PORT;
-  ok(text, new Error('The required "PORT" env variable is missing'));
-
-  const exception = new Error(
-    `The "PORT" env variable must be a positive integer number; got "${text}"`,
-  );
-
-  const port = Number(text);
-
-  ok(!Number.isNaN(port), exception);
-  ok(port > 0, exception);
-  ok(port % 1 === 0, exception);
-
-  return port;
-}
 
 /**
  * The application entry point.
@@ -40,12 +16,12 @@ function getPort(): number {
     await app.init();
     await app.close();
 
-    return;
+    process.exit(0);
   }
 
-  const port = getPort();
+  const config = app.get(AppConfig);
 
-  app.listen(port, () => {
-    console.log(`The application is running at http://localhost:${port}`);
+  app.listen(config.port, () => {
+    console.log(`The application is running at http://localhost:${config.port}`);
   });
 })();

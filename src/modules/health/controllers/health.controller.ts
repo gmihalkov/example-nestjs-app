@@ -1,5 +1,10 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { HealthCheck, HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
+import {
+  HealthCheck,
+  HealthCheckService,
+  HttpHealthIndicator,
+  TypeOrmHealthIndicator,
+} from '@nestjs/terminus';
 
 /**
  * The controller that returns a current health-check status.
@@ -19,6 +24,12 @@ export class HealthController {
   private readonly http!: HttpHealthIndicator;
 
   /**
+   * The service that checks if the database is available.
+   */
+  @Inject(TypeOrmHealthIndicator)
+  private readonly database!: TypeOrmHealthIndicator;
+
+  /**
    * Checks the application services and returns a result of this check.
    */
   @Get()
@@ -27,6 +38,8 @@ export class HealthController {
     return this.healthCheck.check([
       // Checks if the application is able to send HTTP requests to the external resources.
       () => this.http.pingCheck('internet-connection', 'http://1.1.1.1'),
+      // Checks if the database is accessible.
+      () => this.database.pingCheck('database'),
     ]);
   }
 }
