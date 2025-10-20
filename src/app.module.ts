@@ -7,6 +7,7 @@ import { ConfigModule } from '@/common/config';
 import { AppConfig } from './app.config';
 import { AuthModule } from './modules/auth';
 import { HealthModule } from './modules/health';
+import { UserModule } from './modules/user';
 
 /**
  * The main application module.
@@ -29,6 +30,7 @@ import { HealthModule } from './modules/health';
     }),
     HealthModule,
     AuthModule,
+    UserModule,
   ],
 })
 export class AppModule {
