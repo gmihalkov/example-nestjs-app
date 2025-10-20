@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@/common/config';
 
 import { AppConfig } from './app.config';
+import { AuthModule } from './modules/auth';
 import { HealthModule } from './modules/health';
 
 /**
@@ -27,6 +28,7 @@ import { HealthModule } from './modules/health';
       }),
     }),
     HealthModule,
+    AuthModule,
   ],
 })
 export class AppModule {
