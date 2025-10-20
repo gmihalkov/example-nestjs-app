@@ -8,17 +8,23 @@ import { DataSource } from 'typeorm';
 
 import { AppModule } from '@/app.module';
 
-import { TestHttpRequest } from './test-http-request';
-
 /**
- * The entity that is our application, but ran in memory.
+ * The helper that contains methods to manage the application-under-test.
  */
-export class TestApp {
+export class AppHelper {
   /**
-   * Creates an instance of our application mocking some modules and providers.
+   * Creates and sets up the application-under-test in the passed test context. It also adds into
+   * the test context `before` and `after` hooks that initializes and gracefully closes the
+   * application correspondingly.
+   *
+   * @param context
+   * The Node.js test runner context.
+   *
+   * @returns
+   * An application-under-test.
    */
-  public static async create(scope: TestContext): Promise<TestApp> {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+  public static async create(context: TestContext): Promise<INestApplication> {
+    const testModule = await Test.createTestingModule({ imports: [AppModule] })
       /**
        * Override the database connection settings. Here we replace the Postgres with an in-memory
        * SQLite. It allows tests to work faster and don't put a lot of garbage into a developer's
@@ -41,32 +47,17 @@ export class TestApp {
       })
       .compile();
 
-    const app = moduleRef.createNestApplication();
-    AppModule.setupApp(app);
+    const application = testModule.createNestApplication();
+    AppModule.setupApp(application);
 
-    scope.before(async () => {
-      await app.init();
+    context.before(async () => {
+      await application.init();
     });
 
-    scope.after(async () => {
-      await app.close();
+    context.after(async () => {
+      await application.close();
     });
 
-    return new this(app);
-  }
-
-  /**
-   * Creates an instance of this class with the given test application.
-   *
-   * @param nest
-   * The Nest.js application-under-test.
-   */
-  protected constructor(public readonly nest: INestApplication) {}
-
-  /**
-   * The client to send HTTP requests to the application.
-   */
-  public get http(): TestHttpRequest {
-    return new TestHttpRequest(this, {});
+    return application;
   }
 }
