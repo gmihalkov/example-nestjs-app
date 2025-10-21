@@ -1,5 +1,7 @@
 import type { ExecutionContext } from '@nestjs/common';
 
+import { ExecutionContextHelper } from '@/common/execution-context';
+
 import type { UserModel } from '../models/user.model';
 
 /**
@@ -22,27 +24,7 @@ export class CurrentAuthUserHelper {
    * A user model or `undefined`.
    */
   public static getFromContext(context: ExecutionContext): UserModel | undefined {
-    const type = context.getType();
-
-    switch (type) {
-      case 'http': {
-        const request = context.switchToHttp().getRequest();
-        const state = request.state ?? {};
-
-        return state[this.KEY];
-      }
-
-      case 'ws': {
-        const client = context.switchToWs().getClient();
-        const data = client.data ?? {};
-
-        return data[this.KEY];
-      }
-
-      default: {
-        throw new Error(`${type} is not supported`);
-      }
-    }
+    return ExecutionContextHelper.getMeta<UserModel>(context, this.KEY);
   }
 
   /**
@@ -55,32 +37,6 @@ export class CurrentAuthUserHelper {
    * The user to be stored.
    */
   public static putToContext(context: ExecutionContext, user: UserModel): void {
-    const type = context.getType();
-
-    switch (type) {
-      case 'http': {
-        const request = context.switchToHttp().getRequest();
-        const state = request.state ?? {};
-
-        state[this.KEY] = user;
-        request.state = state;
-
-        break;
-      }
-
-      case 'ws': {
-        const client = context.switchToWs().getClient();
-        const data = client.data ?? {};
-
-        data[this.KEY] = user;
-        client.data = data;
-
-        break;
-      }
-
-      default: {
-        throw new Error(`${type} is not supported`);
-      }
-    }
+    ExecutionContextHelper.setMeta(context, this.KEY, user);
   }
 }

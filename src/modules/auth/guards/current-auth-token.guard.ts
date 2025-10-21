@@ -42,7 +42,7 @@ export const CurrentAuthTokenGuard = (options: Options = {}): Mixin<CanActivate>
    * The current authorization token guard.
    */
   @Injectable()
-  class WithCurrentAuthToken implements CanActivate {
+  class CurrentAuthTokenMixin implements CanActivate {
     /**
      * The module configuration.
      */
@@ -59,13 +59,7 @@ export const CurrentAuthTokenGuard = (options: Options = {}): Mixin<CanActivate>
         return true;
       }
 
-      const authorization = CurrentAuthTokenHelper.getAuthorization(context);
-
-      if (!authorization) {
-        return !required;
-      }
-
-      const jwt = CurrentAuthTokenHelper.parseAuthorization(authorization);
+      const jwt = CurrentAuthTokenHelper.getJwtFromContext(context);
 
       if (!jwt) {
         return !required;
@@ -83,5 +77,5 @@ export const CurrentAuthTokenGuard = (options: Options = {}): Mixin<CanActivate>
     }
   }
 
-  return mixin(WithCurrentAuthToken);
+  return mixin(CurrentAuthTokenMixin);
 };

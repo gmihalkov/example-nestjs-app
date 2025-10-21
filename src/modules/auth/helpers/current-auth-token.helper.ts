@@ -1,5 +1,7 @@
 import type { ExecutionContext } from '@nestjs/common';
 
+import { ExecutionContextHelper } from '@/common/execution-context';
+
 import type { AuthTokenDto } from '../dto/auth-token.dto';
 
 /**
@@ -20,22 +22,16 @@ export class CurrentAuthTokenHelper {
    * @returns
    * A string or `undefined`.
    */
-  public static getAuthorization(context: ExecutionContext): string | undefined {
+  public static getJwtFromContext(context: ExecutionContext): string | undefined {
     const type = context.getType();
 
     switch (type) {
       case 'http': {
-        const request = context.switchToHttp().getRequest();
-        const headers = request.headers ?? {};
-
-        return headers.authorization || headers.Authorization || undefined;
+        return this.getJwtFromHttpContext(context);
       }
 
       case 'ws': {
-        const client = context.switchToWs().getClient();
-        const string = client.handshake?.auth?.token;
-
-        return string || undefined;
+        return this.getJwtFromWsContext(context);
       }
 
       default: {
@@ -45,16 +41,25 @@ export class CurrentAuthTokenHelper {
   }
 
   /**
-   * Parses the passed "Authorization" string, and returns a JWT token. If the string doesn't
-   * match the format, returns `undefined`.
+   * Returns an authorization token from the incoming HTTP request. If there is no Authorization
+   * header, or its value is invalid, returns `undefined`.
    *
-   * @param authorization
-   * The "Authorization" string.
+   * @param context
+   * The execution context.
    *
    * @returns
-   * A JWT or `undefined`.
+   * A token or `undefined`.
    */
-  public static parseAuthorization(authorization: string): string | undefined {
+  private static getJwtFromHttpContext(context: ExecutionContext): string | undefined {
+    const request = context.switchToHttp().getRequest();
+    const headers = request.headers ?? {};
+
+    const authorization = headers.authorization || headers.Authorization || undefined;
+
+    if (!authorization) {
+      return undefined;
+    }
+
     const protocol = 'Bearer ';
 
     if (!authorization.startsWith(protocol)) {
@@ -62,6 +67,23 @@ export class CurrentAuthTokenHelper {
     }
 
     const token = authorization.substring(protocol.length);
+
+    return token || undefined;
+  }
+
+  /**
+   * Returns an authorization token from the given incoming WS message. If the client didn't send
+   * a token at handshake, returns `undefined`.
+   *
+   * @param context
+   * The execution context.
+   *
+   * @returns
+   * A token or `undefined`.
+   */
+  private static getJwtFromWsContext(context: ExecutionContext): string | undefined {
+    const client = context.switchToWs().getClient();
+    const token = client.handshake?.auth?.token;
 
     return token || undefined;
   }
@@ -82,27 +104,7 @@ export class CurrentAuthTokenHelper {
    * A token or `undefined`.
    */
   public static getFromContext(context: ExecutionContext): AuthTokenDto | undefined {
-    const type = context.getType();
-
-    switch (type) {
-      case 'http': {
-        const request = context.switchToHttp().getRequest();
-        const state = request.state ?? {};
-
-        return state[this.KEY] ?? undefined;
-      }
-
-      case 'ws': {
-        const client = context.switchToWs().getClient();
-        const data = client.data ?? {};
-
-        return data[this.KEY] ?? undefined;
-      }
-
-      default: {
-        throw new Error(`${type} is not supported`);
-      }
-    }
+    return ExecutionContextHelper.getMeta<AuthTokenDto>(context, this.KEY);
   }
 
   /**
@@ -115,32 +117,6 @@ export class CurrentAuthTokenHelper {
    * The token to be stored.
    */
   public static putToContext(context: ExecutionContext, token: AuthTokenDto): void {
-    const type = context.getType();
-
-    switch (type) {
-      case 'http': {
-        const request = context.switchToHttp().getRequest();
-        const state = request.state ?? {};
-
-        state[this.KEY] = token;
-        request.state = state;
-
-        break;
-      }
-
-      case 'ws': {
-        const client = context.switchToWs().getClient();
-        const data = client.data ?? {};
-
-        data[this.KEY] = token;
-        client.data = data;
-
-        break;
-      }
-
-      default: {
-        throw new Error(`${type} is not supported`);
-      }
-    }
+    ExecutionContextHelper.setMeta(context, this.KEY, token);
   }
 }
