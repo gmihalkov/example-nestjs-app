@@ -1,5 +1,6 @@
 import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConfigModule } from '@/common/config';
@@ -38,7 +39,7 @@ export class AppModule {
    * Creates and sets up the Nest.js application from this module.
    */
   public static async createApp(): Promise<INestApplication> {
-    const app = await NestFactory.create(this);
+    const app = await NestFactory.create(this, new FastifyAdapter());
     this.setupApp(app);
 
     return app;
