@@ -6,7 +6,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
  */
 export class AuthConfig {
   /**
-   * The authorization JWT signature.
+   * The signature to sign JWT.
    */
   @Expose({ name: 'AUTH_TOKEN_SIGNATURE' })
   @IsString()
