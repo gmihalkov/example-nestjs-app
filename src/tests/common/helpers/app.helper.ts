@@ -51,7 +51,7 @@ export class AppHelper {
     AppModule.setupApp(application);
 
     context.before(async () => {
-      await application.init();
+      await application.listen(0);
     });
 
     context.after(async () => {
