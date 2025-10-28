@@ -3,32 +3,20 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ConfigModule } from '@/common/config';
-
-import { AppConfig } from './app.config';
 import { AuthModule } from './modules/auth';
 import { HealthModule } from './modules/health';
 import { UserModule } from './modules/user';
+import { typeOrmOptions } from './typeorm.options';
 
 /**
  * The main application module.
  */
 @Module({
   imports: [
-    ConfigModule.register([AppConfig]),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule.register([AppConfig])],
-      inject: [AppConfig],
-      useFactory: (config: AppConfig) => ({
-        type: 'postgres',
-        autoLoadEntities: true,
-        host: config.postgresHost,
-        port: config.postgresPort,
-        database: config.postgresDatabase,
-        username: config.postgresUsername,
-        password: config.postgresPassword,
-      }),
-    }),
+    // Import and set up the third-party modules.
+    TypeOrmModule.forRoot(typeOrmOptions),
+
+    // Import the application modules.
     HealthModule,
     AuthModule,
     UserModule,

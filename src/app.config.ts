@@ -1,5 +1,12 @@
+import { resolve } from 'node:path';
+
 import { Expose, Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
+
+/**
+ * An absolute path to the project's root folder.
+ */
+const PROJECT_ROOT = process.cwd();
 
 /**
  * The configuration of the main application module.
@@ -53,4 +60,34 @@ export class AppConfig {
   @IsString()
   @IsNotEmpty()
   public readonly postgresDatabase!: string;
+
+  /**
+   * A glob pattern of the files containing the TypeORM entity definitions (relative).
+   */
+  @Expose({ name: 'TYPEORM_ENTITIES_PATH' })
+  @IsString()
+  @IsNotEmpty()
+  private readonly typeormEntitiesRelativePath!: string;
+
+  /**
+   * A glob pattern of the files containing the TypeORM entity definitions.
+   */
+  public get typeormEntitiesPath(): string {
+    return resolve(PROJECT_ROOT, this.typeormEntitiesRelativePath);
+  }
+
+  /**
+   * A glob pattern of the TypeORM migration files (relative).
+   */
+  @Expose({ name: 'TYPEORM_MIGRATIONS_PATH' })
+  @IsString()
+  @IsNotEmpty()
+  private readonly typeormMigrationsRelativePath!: string;
+
+  /**
+   * A glob pattern of the files containing the TypeORM entity definitions.
+   */
+  public get typeormMigrationsPath(): string {
+    return resolve(PROJECT_ROOT, this.typeormMigrationsRelativePath);
+  }
 }

@@ -2,6 +2,7 @@ import type { DynamicModule, Provider } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
+import { ConfigHelper } from './helpers/config.helper';
 import type { AnyDto } from './types/any-dto.type';
 
 /**
@@ -53,18 +54,6 @@ export class ConfigModule {
    * A valid DTO instance.
    */
   private static createDtoInstance(dtoClass: AnyDto): InstanceType<AnyDto> {
-    const instance = plainToInstance(dtoClass, process.env, { excludeExtraneousValues: true });
-    const issues = validateSync(instance);
-
-    if (issues.length === 0) {
-      return instance;
-    }
-
-    const messages = issues.map((issue) => issue.toString());
-
-    const exception = new Error(`Environment variables are invalid:\n${messages.join('\n')}`);
-    Error.captureStackTrace(exception, this.register);
-
-    throw exception;
+    return ConfigHelper.create(dtoClass);
   }
 }

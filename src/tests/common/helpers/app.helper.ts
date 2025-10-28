@@ -1,10 +1,7 @@
-import { resolve } from 'node:path';
 import type { TestContext } from 'node:test';
 
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { getDataSourceToken } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 
 import { AppModule } from '@/app.module';
 
@@ -24,28 +21,7 @@ export class AppHelper {
    * An application-under-test.
    */
   public static async create(context: TestContext): Promise<INestApplication> {
-    const testModule = await Test.createTestingModule({ imports: [AppModule] })
-      /**
-       * Override the database connection settings. Here we replace the Postgres with an in-memory
-       * SQLite. It allows tests to work faster and don't put a lot of garbage into a developer's
-       * local database.
-       */
-      .overrideProvider(getDataSourceToken())
-      .useFactory({
-        factory: async () => {
-          const dataSource = new DataSource({
-            type: 'better-sqlite3',
-            database: ':memory:',
-            synchronize: true,
-            entities: [resolve(process.cwd(), './src/**/*.model.ts')],
-          });
-
-          await dataSource.initialize();
-
-          return dataSource;
-        },
-      })
-      .compile();
+    const testModule = await Test.createTestingModule({ imports: [AppModule] }).compile();
 
     const application = testModule.createNestApplication();
     AppModule.setupApp(application);
