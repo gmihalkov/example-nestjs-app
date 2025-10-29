@@ -70,6 +70,6 @@ export class AuthService {
 
 ## Using outside of Nest.js
 
-The good example is here: [typeorm.options.ts](../../src/typeorm.options.ts).
+The good example is here: [typeorm.options.ts](../../typeorm.options.ts).
 
 In short, the package exports the method `ConfigHelper.create`. It takes a DTO class as an argument, and returns constructs its validated instance.

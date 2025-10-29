@@ -19,9 +19,97 @@ This is a demo application on Nest.js. Its goal is to show the basic setup of a 
 - Redis for caching and for communication between multiple application instances.
 - Local SMTP server that allows "sending" emails (or rather, it displays sent emails through its web interface or Node.js API for integration testing).
 
+## Getting started
+
+You need to do several simple steps to work with the project.
+
+### Install the system dependencies
+
+The project requires:
+
+- Node.js v22 (we suggest using [nvm](https://github.com/nvm-sh/nvm));
+- Docker;
+- Docker Compose;
+
+Once you've installed all these tools, you can proceed with the next steps.
+
+### Install the project dependencies
+
+Simply run:
+
+```bash
+npm install
+```
+
+and the script will do the rest.
+
+### Start the project's infrastructure
+
+The application depends on Postgres DB, Redis and an SMTP server. So, we need to get them up:
+
+```bash
+docker-compose up -d
+```
+
+As you see, our infrastructure is a bunch of Docker containers managed by Docker Compose. So, you’ll need to start them again each time you reboot your machine.
+
+### Set up the infrastructure
+
+We started the database, but it's empty. Now, we need to create the project tables and put some initial records into it:
+
+```bash
+npm run setup
+```
+
+It’s a command that sets up the infrastructure. Currently, it only runs the database migrations, but we may extend it in the future.
+
+Keep in mind that someone may change the database structure in any PR, so it’s a good practice to run `npm run setup` every time you pull the latest changes from the main branch.
+
+### Start the application
+
+There are several options depending on what you want to do. To simply start the app:
+
+```bash
+npm run start
+```
+
+If you’re a backend developer who wants to write new code, you need to run:
+
+```bash
+npm run watch
+```
+
+This command runs the app in watch mode - it automatically restarts whenever you change the code.
+
+If you just want to make sure the app works, run:
+
+```bash
+npm run start --dry-run
+```
+
+It will start the app and then immediately stop it.
+
+### Stop the infrastructure
+
+Once you’re done, you can run:
+
+```bash
+docker-compose down
+```
+
+to stop the database, Redis, and everything else.
+
+**PS.** There’s a neat trick that not only stops the database, but also clears it:
+
+```bash
+docker-compose down -v
+```
+
+This command removes all local data, so the next time you run it, you’ll start with a fresh database.
+
 ## Working with environment variables
 
-> The complete list of environment variables and their descriptions [you can find here](./env).
+> The complete list of environment variables and their descriptions [you can find here](./.env).
 
 ### Overview
 
