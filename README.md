@@ -48,8 +48,10 @@ and the script will do the rest.
 The application depends on Postgres DB, Redis and an SMTP server. So, we need to get them up:
 
 ```bash
-docker-compose up -d
+npm run up
 ```
+
+It's just an alias for `docker-compose up -d`.
 
 As you see, our infrastructure is a bunch of Docker containers managed by Docker Compose. So, you’ll need to start them again each time you reboot your machine.
 
@@ -94,15 +96,15 @@ It will start the app and then immediately stop it.
 Once you’re done, you can run:
 
 ```bash
-docker-compose down
+npm run down
 ```
 
-to stop the database, Redis, and everything else.
+to stop the database, Redis, and everything else. It's just an alias for `docker-compose down`.
 
 **PS.** There’s a neat trick that not only stops the database, but also clears it:
 
 ```bash
-docker-compose down -v
+npm run down -- -v
 ```
 
 This command removes all local data, so the next time you run it, you’ll start with a fresh database.
@@ -188,3 +190,67 @@ doppler secrets download --format=env --no-file -p project_name -c config_name >
 ```
 
 It's enough to get things work.
+
+## Working with Docker containers
+
+The project contains several Docker containers:
+
+- The [application itself](https://hub.docker.com/_/node);
+- The local [Postgres DB](https://hub.docker.com/_/postgres);
+- The local [Redis server](https://hub.docker.com/_/redis);
+- The local [SMTP server](https://hub.docker.com/r/rnwood/smtp4dev).
+
+In other words, everything can be divided into two groups: the application itself and its infrastructure.
+
+### Infrastructure
+
+When it comes to infrastructure, it’s described in the [docker-compose.yaml](./docker-compose.yaml) file. We don’t expect it to be used anywhere except on a local machine.
+
+There are a few important details in this file worth paying attention to:
+
+- The services don't have defined `container_name`. This is intentional - it prevents the project’s containers from conflicting with any existing ones. By default, Docker Compose generates container names in the format `<project-folder-name>-<service-name>`, and that behavior works perfectly fine for us.
+- Each service includes an `env_file` directive. This ensures that environment variables from `.env` and `.env.local` files are loaded into the containers.
+- All volumes in the file are _named volumes_. This allows you to easily reset the database with a single command `docker-compose down -v`.
+
+Accordingly, any new services we add to the infrastructure should follow the same rules.
+
+### Application
+
+While the [docker-compose.yaml](./docker-compose.yaml) file defines the local infrastructure, the [Dockerfile](./Dockerfile) describes the container for the application itself.
+
+This container includes [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/), which runs multiple parallel instances of the application.
+
+PM2 runs in [cluster mode](https://pm2.keymetrics.io/docs/usage/cluster-mode/) and doesn’t impose any limits on the number of active Node.js instances. In other words, if you don’t specify the maximum number of CPU cores available to the container, the application will use all of them. The same applies to memory usage.
+
+We assume that the host machine running the application will handle resource allocation at startup, for example:
+
+```bash
+docker run --cpus=MAX_CPU --memory=MAX_MEMORY ...
+```
+
+In most cases, the hosting provider allows you to configure these parameters directly through its admin panel. That said, you can still control the number of instances via your `.env.local` file:
+
+```ini
+PM2_INSTANCES=2
+```
+
+If you include this setting, PM2 will limit itself to just two CPU cores instead of using all available ones.
+
+### Checking the app container
+
+Sometimes during development, you may want to test how the application behaves inside a Docker container. To make this easier, we’ve added a lightweight helper — [docker-compose.check-dockerfile.yaml](./docker-compose.check-dockerfile.yaml) — along with a convenience command:
+
+```bash
+npm run check-cluster
+```
+
+which is essentially just an alias for:
+
+```bash
+docker-compose -f ./docker-compose.check-dockerfile.yaml up --build
+```
+
+This command rebuilds the application container and runs it while streaming logs directly to the console.
+
+As the filenames and command names suggest, this setup is meant **only for debugging the container**.  
+**Do not use it in CI/CD pipelines!**

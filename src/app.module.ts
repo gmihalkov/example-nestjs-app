@@ -3,6 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AppConfig } from './app.config';
+import { ConfigModule } from './common/config';
 import { AuthModule } from './modules/auth';
 import { HealthModule } from './modules/health';
 import { UserModule } from './modules/user';
@@ -15,6 +17,8 @@ import { typeOrmOptions } from './typeorm.options';
   imports: [
     // Import and set up the third-party modules.
     TypeOrmModule.forRoot(typeOrmOptions),
+
+    ConfigModule.register([AppConfig]),
 
     // Import the application modules.
     HealthModule,

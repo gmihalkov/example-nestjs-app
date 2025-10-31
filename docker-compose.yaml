@@ -12,8 +12,6 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - internal
     command: ["postgres", "-c", "listen_addresses=*"]
 volumes:
   postgres_data: {}

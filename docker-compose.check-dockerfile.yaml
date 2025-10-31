@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    network_mode: host
+    ports:
+      - "${PORT}:3000"
+    restart: always
