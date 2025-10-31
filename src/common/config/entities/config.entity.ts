@@ -18,16 +18,6 @@ export class Config {
   }
 
   /**
-   * Returns a Nest.js provider to be added into module.
-   *
-   * @returns
-   * A Nest.js provider definition.
-   */
-  public static getProvider(): Provider {
-    return ConfigHelper.getProvider(this);
-  }
-
-  /**
    * A Nest.js provider to be added into the module.
    */
   public static get PROVIDER(): Provider {
