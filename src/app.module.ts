@@ -1,30 +1,22 @@
 import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { TypeOrmModule } from '@/common/typeorm';
 
 import { AppConfig } from './app.config';
-import { ConfigModule } from './common/config';
+import { RedisModule } from './common/redis';
 import { AuthModule } from './modules/auth';
 import { HealthModule } from './modules/health';
 import { UserModule } from './modules/user';
-import { typeOrmOptions } from './typeorm.options';
 
 /**
  * The main application module.
  */
 @Module({
-  imports: [
-    // Import and set up the third-party modules.
-    TypeOrmModule.forRoot(typeOrmOptions),
-
-    ConfigModule.register([AppConfig]),
-
-    // Import the application modules.
-    HealthModule,
-    AuthModule,
-    UserModule,
-  ],
+  imports: [TypeOrmModule, RedisModule, HealthModule, AuthModule, UserModule],
+  exports: [AppConfig],
+  providers: [AppConfig],
 })
 export class AppModule {
   /**

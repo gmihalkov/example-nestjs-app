@@ -1,38 +1,41 @@
-import { Inject, Module, type OnModuleDestroy } from '@nestjs/common';
-import Redis from 'ioredis';
+import { Global, Module, type OnModuleDestroy } from '@nestjs/common';
+import RedisClient from 'ioredis';
 
-import { ConfigModule } from '@/common/config';
-
+import { InjectRedisClient } from './decorators/inject-redis-client.decorator';
 import { RedisConfig } from './redis.config';
 import { REDIS_CLIENT } from './tokens/redis-client.token';
 
 /**
- * The module that exports a configured Redis client.
+ * The Redis configuration.
  */
+const config = RedisConfig.create();
+
+/**
+ * The global module that exports a configured Redis client.
+ */
+@Global()
 @Module({
-  imports: [ConfigModule.register([RedisConfig])],
+  exports: [REDIS_CLIENT, RedisConfig],
   providers: [
+    RedisConfig,
     {
       provide: REDIS_CLIENT,
-      inject: [RedisConfig],
-      useFactory: (config: RedisConfig) => {
-        return new Redis({
+      useFactory: () =>
+        new RedisClient({
           host: config.redisHost,
           port: config.redisPort,
           username: config.redisUsername,
           password: config.redisPassword,
-        });
-      },
+        }),
     },
   ],
-  exports: [REDIS_CLIENT],
 })
 export class RedisModule implements OnModuleDestroy {
   /**
    * The Redis client.
    */
-  @Inject(REDIS_CLIENT)
-  private readonly redis!: Redis;
+  @InjectRedisClient()
+  private readonly redis!: RedisClient;
 
   /**
    * @inheritdoc

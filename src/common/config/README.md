@@ -9,7 +9,7 @@ This module provides you the methods to parse and validate environment variables
 - The property names must be in `camelCase` as usual class properties. To cast the naming, use `@Expose({ name: 'NODE_ENV' })`;
 - All properties must be required. The default values are in `.env` file.
 
-The good example is [@/modules/auth](../../modules/auth). In the section below, we will use this module as the demonstration.
+The good example is [@/modules/auth](../../modules/auth/auth.config.ts). In the section below, we will use this module as the demonstration.
 
 ## Getting started
 
@@ -20,7 +20,9 @@ First, you need to define a configuration class:
 import { Expose } from "class-transformer";
 import { IsString, IsNotEmpty } from "class-validator";
 
-export class AuthConfig {
+import { Config } from "@/common/config";
+
+export class AuthConfig extends Config {
   @Expose({ name: "AUTH_TOKEN_SIGNATURE" })
   @IsString()
   @IsNotEmpty()
@@ -36,19 +38,17 @@ src/modules/auth/:
 	auth.module.ts
 ```
 
-Next, you need to import this configuration into the module:
+Next, you need to register this configuration as a provider:
 
 ```typescript
 // src/modules/auth/auth.module.ts
 import { Module } from "@nestjs/common";
 
-import { ConfigModule } from "@/common/config";
-
 import { AuthService } from "./services/auth.service";
 import { AuthConfig } from "./auth.config";
 
 @Module({
-  imports: [ConfigModule.register([AuthConfig]), AuthService],
+  providers: [AuthConfig, AuthService],
 })
 export class AuthModule {}
 ```
@@ -68,8 +68,45 @@ export class AuthService {
 }
 ```
 
+### Using without extending the base class
+
+If by some reason you cannot inherit your configuration DTO class from [Config](./entities//config.entity.ts), you can use the workaround:
+
+```typescript
+// src/modules/auth/auth.module.ts
+import { Module } from "@nestjs/common";
+
+import { ConfigModule } from "@/common/config";
+
+import { AuthService } from "./services/auth.service";
+import { AuthConfig } from "./auth.config";
+
+@Module({
+  imports: [ConfigModule.register([AuthConfig])],
+  providers: [AuthService],
+})
+export class AuthModule {}
+```
+
+It also will register your configuration as a provider inside the module.
+
 ## Using outside of Nest.js
 
 The good example is here: [typeorm.options.ts](../../typeorm.options.ts).
 
-In short, the package exports the method `ConfigHelper.create`. It takes a DTO class as an argument, and returns constructs its validated instance.
+If your class inherits the base [Config](./entities/config.entity.ts) class, you can simply do:
+
+```typescript
+import { TypeOrmConfig } from "@/common/typeorm";
+
+const config = TypeOrmConfig.create();
+```
+
+If it doesn't, there is [ConfigHelper](./helpers/config.helper.ts) that does the similar thing:
+
+```typescript
+import { ConfigHelper } from "@/common/config";
+import { TypeOrmConfig } from "@/common/typeorm";
+
+const config = ConfigHelper.create(TypeOrmConfig);
+```

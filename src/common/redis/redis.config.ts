@@ -1,10 +1,12 @@
 import { Expose, Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 
+import { Config } from '@/common/config';
+
 /**
  * The Redis module configuration.
  */
-export class RedisConfig {
+export class RedisConfig extends Config {
   /**
    * The Redis server host (without a port).
    */
