@@ -236,6 +236,16 @@ PM2_INSTANCES=2
 
 If you include this setting, PM2 will limit itself to just two CPU cores instead of using all available ones.
 
+### Checking the app PM2 cluster
+
+If you want to start the application as a PM2 cluster, simply run:
+
+```bash
+npm run start-cluster
+```
+
+This is the exact same command executed inside the [Docker container](./Dockerfile), ensuring that the runtime conditions are as close as possible to those on remote servers.
+
 ### Checking the app container
 
 Sometimes during development, you may want to test how the application behaves inside a Docker container. To make this easier, we’ve added a lightweight helper — [docker-compose.check-dockerfile.yaml](./docker-compose.check-dockerfile.yaml) — along with a convenience command:
