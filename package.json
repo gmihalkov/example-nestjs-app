@@ -9,6 +9,8 @@
   "scripts": {
     "up": "docker-compose up -d",
     "down": "docker-compose down",
+    "setup": "run-s setup:*",
+    "setup:migrations": "run-s run-migrations",
     "start": "node -r 'ts-node/register' ./src/index.ts",
     "watch": "node -r 'ts-node/register' --watch ./src/index.ts",
     "check": "run-s check:*",
