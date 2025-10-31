@@ -6,6 +6,6 @@ import { AuthConfig } from './auth.config';
  * The module that is responsible for authentication and authorization.
  */
 @Module({
-  providers: [AuthConfig],
+  providers: [AuthConfig.PROVIDER],
 })
 export class AuthModule {}

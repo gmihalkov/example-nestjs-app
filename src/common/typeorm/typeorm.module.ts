@@ -14,7 +14,5 @@ const config = TypeOrmConfig.create();
 @Global()
 @Module({
   imports: [TypeOrm.forRoot(config.dataSourceOptions)],
-  exports: [TypeOrm, TypeOrmConfig],
-  providers: [TypeOrmConfig],
 })
 export class TypeOrmModule {}

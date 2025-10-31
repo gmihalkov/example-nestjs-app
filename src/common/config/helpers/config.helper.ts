@@ -1,3 +1,4 @@
+import type { Provider } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
@@ -31,5 +32,23 @@ export class ConfigHelper {
     Error.captureStackTrace(exception, this.create);
 
     throw exception;
+  }
+
+  /**
+   * Returns a Nest.js provider definition that adds the passed configuration DTO class a provider.
+   *
+   * @param dtoClass
+   * The configuration DTO class.
+   *
+   * @returns
+   * A provider definition.
+   */
+  public static getProvider<T extends AnyDto>(dtoClass: T): Provider {
+    const factory = this.create.bind(this, dtoClass);
+
+    return {
+      provide: dtoClass,
+      useFactory: factory,
+    };
   }
 }

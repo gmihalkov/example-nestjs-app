@@ -13,7 +13,7 @@ The good example is [@/modules/auth](../../modules/auth/auth.config.ts). In the 
 
 ## Getting started
 
-First, you need to define a configuration class:
+First, you need to define a configuration class. It must inherits the base [Config](./entities//config.entity.ts) as it's shown below:
 
 ```typescript
 // src/modules/auth/auth.config.ts
@@ -38,22 +38,24 @@ src/modules/auth/:
 	auth.module.ts
 ```
 
-Next, you need to register this configuration as a provider:
+Next, you need to register the created class as a provider:
 
 ```typescript
 // src/modules/auth/auth.module.ts
 import { Module } from "@nestjs/common";
 
+import { ConfigModule } from "@/common/config";
+
 import { AuthService } from "./services/auth.service";
 import { AuthConfig } from "./auth.config";
 
 @Module({
-  providers: [AuthConfig, AuthService],
+  providers: [AuthConfig.PROVIDER, AuthService],
 })
 export class AuthModule {}
 ```
 
-And, finally, you can inject the configuration as a provider:
+And, finally, you can inject the configuration instance into another module providers:
 
 ```typescript
 // src/modules/auth/services/auth.service.ts
@@ -67,28 +69,6 @@ export class AuthService {
   private readonly config!: AuthConfig;
 }
 ```
-
-### Using without extending the base class
-
-If by some reason you cannot inherit your configuration DTO class from [Config](./entities//config.entity.ts), you can use the workaround:
-
-```typescript
-// src/modules/auth/auth.module.ts
-import { Module } from "@nestjs/common";
-
-import { ConfigModule } from "@/common/config";
-
-import { AuthService } from "./services/auth.service";
-import { AuthConfig } from "./auth.config";
-
-@Module({
-  imports: [ConfigModule.register([AuthConfig])],
-  providers: [AuthService],
-})
-export class AuthModule {}
-```
-
-It also will register your configuration as a provider inside the module.
 
 ## Using outside Nest.js
 

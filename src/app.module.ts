@@ -16,7 +16,7 @@ import { AppConfig } from './app.config';
 @Module({
   imports: [TypeOrmModule, RedisModule, HealthModule, AuthModule, UserModule],
   exports: [AppConfig],
-  providers: [AppConfig],
+  providers: [AppConfig.PROVIDER],
 })
 export class AppModule {
   /**

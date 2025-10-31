@@ -15,9 +15,8 @@ const config = RedisConfig.create();
  */
 @Global()
 @Module({
-  exports: [REDIS_CLIENT, RedisConfig],
+  exports: [REDIS_CLIENT],
   providers: [
-    RedisConfig,
     {
       provide: REDIS_CLIENT,
       useFactory: () =>

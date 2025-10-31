@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
 
 import { ConfigHelper } from '../helpers/config.helper';
 import type { AnyDto } from '../types/any-dto.type';
@@ -6,7 +6,6 @@ import type { AnyDto } from '../types/any-dto.type';
 /**
  * The base class of any configuration DTO.
  */
-@Injectable()
 export class Config {
   /**
    * Creates an instance of this configuration DTO.
@@ -16,5 +15,22 @@ export class Config {
    */
   public static create<T extends AnyDto>(this: T): InstanceType<T> {
     return ConfigHelper.create(this);
+  }
+
+  /**
+   * Returns a Nest.js provider to be added into module.
+   *
+   * @returns
+   * A Nest.js provider definition.
+   */
+  public static getProvider(): Provider {
+    return ConfigHelper.getProvider(this);
+  }
+
+  /**
+   * A Nest.js provider to be added into the module.
+   */
+  public static get PROVIDER(): Provider {
+    return ConfigHelper.getProvider(this);
   }
 }

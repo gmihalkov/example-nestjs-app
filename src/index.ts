@@ -24,5 +24,6 @@ const isDryRun = Boolean(process.env.npm_config_dry_run);
 
   app.listen(config.port, () => {
     console.log(`The application is running at http://localhost:${config.port}`);
+    console.log(`You can check it's health here: http://localhost:${config.port}/health`);
   });
 })();
