@@ -6,6 +6,8 @@ import {
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 
+import { RedisHealthIndicator } from '../indicators/redis-health.indicator';
+
 /**
  * The controller that returns a current health-check status.
  */
@@ -30,6 +32,12 @@ export class HealthController {
   private readonly database!: TypeOrmHealthIndicator;
 
   /**
+   * The service that checks if the Redis is available.
+   */
+  @Inject(RedisHealthIndicator)
+  private readonly redis!: RedisHealthIndicator;
+
+  /**
    * Checks the application services and returns a result of this check.
    */
   @Get()
@@ -40,6 +48,8 @@ export class HealthController {
       () => this.http.pingCheck('internet-connection', 'http://1.1.1.1'),
       // Checks if the database is accessible.
       () => this.database.pingCheck('database'),
+      // Checks if the Redis accessible.
+      () => this.redis.pingCheck('redis'),
     ]);
   }
 }

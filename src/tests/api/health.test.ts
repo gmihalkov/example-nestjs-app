@@ -37,6 +37,9 @@ test('API /health', async (scope) => {
           database: {
             status: 'up',
           },
+          redis: {
+            status: 'up',
+          },
         },
       });
     });
