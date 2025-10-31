@@ -92,7 +92,7 @@ It also will register your configuration as a provider inside the module.
 
 ## Using outside of Nest.js
 
-The good example is here: [typeorm.options.ts](../../typeorm.options.ts).
+The good example is here: [typeorm-cli.config.ts](../../typeorm-cli.config.ts).
 
 If your class inherits the base [Config](./entities/config.entity.ts) class, you can simply do:
 
