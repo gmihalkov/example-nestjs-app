@@ -90,7 +90,7 @@ export class AuthModule {}
 
 It also will register your configuration as a provider inside the module.
 
-## Using outside of Nest.js
+## Using outside Nest.js
 
 The good example is here: [typeorm-cli.config.ts](../../typeorm-cli.config.ts).
 
