@@ -6,7 +6,8 @@ import {
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 
-import { RedisHealthIndicator } from '../indicators/redis-health.indicator';
+import { MailerHealthIndicator } from '../health-indicators/mailer.health-indicator';
+import { RedisHealthIndicator } from '../health-indicators/redis.health-indicator';
 
 /**
  * The controller that returns a current health-check status.
@@ -38,6 +39,12 @@ export class HealthController {
   private readonly redis!: RedisHealthIndicator;
 
   /**
+   * The service that checks if the mailer is available.
+   */
+  @Inject(MailerHealthIndicator)
+  private readonly mailer!: MailerHealthIndicator;
+
+  /**
    * Checks the application services and returns a result of this check.
    */
   @Get()
@@ -50,6 +57,8 @@ export class HealthController {
       () => this.database.pingCheck('database'),
       // Checks if the Redis accessible.
       () => this.redis.pingCheck('redis'),
+      // Checks if the Mailer is accessible.
+      () => this.mailer.pingCheck('mailer'),
     ]);
   }
 }

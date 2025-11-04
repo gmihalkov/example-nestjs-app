@@ -6,20 +6,17 @@ import { RedisConfig } from './redis.config';
 import { REDIS_CLIENT } from './tokens/redis-client.token';
 
 /**
- * The Redis configuration.
- */
-const config = RedisConfig.create();
-
-/**
  * The global module that exports a configured Redis client.
  */
 @Global()
 @Module({
   exports: [REDIS_CLIENT],
   providers: [
+    RedisConfig.PROVIDER,
     {
       provide: REDIS_CLIENT,
-      useFactory: () =>
+      inject: [RedisConfig],
+      useFactory: (config: RedisConfig) =>
         new RedisClient({
           host: config.redisHost,
           port: config.redisPort,

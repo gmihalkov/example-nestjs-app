@@ -4,15 +4,17 @@ import { TypeOrmModule as TypeOrm } from '@nestjs/typeorm';
 import { TypeOrmConfig } from './typeorm.config';
 
 /**
- * The TypeORM configuration.
- */
-const config = TypeOrmConfig.create();
-
-/**
  * The global TypeORM module.
  */
 @Global()
 @Module({
-  imports: [TypeOrm.forRoot(config.dataSourceOptions)],
+  providers: [TypeOrmConfig.PROVIDER],
+  imports: [
+    TypeOrm.forRootAsync({
+      extraProviders: [TypeOrmConfig.PROVIDER],
+      inject: [TypeOrmConfig],
+      useFactory: (config: TypeOrmConfig) => config.dataSourceOptions,
+    }),
+  ],
 })
 export class TypeOrmModule {}

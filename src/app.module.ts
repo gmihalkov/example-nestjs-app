@@ -2,6 +2,7 @@ import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 
+import { MailerModule } from '@/common/mailer';
 import { RedisModule } from '@/common/redis';
 import { TypeOrmModule } from '@/common/typeorm';
 import { AuthModule } from '@/modules/auth';
@@ -14,7 +15,7 @@ import { AppConfig } from './app.config';
  * The main application module.
  */
 @Module({
-  imports: [TypeOrmModule, RedisModule, HealthModule, AuthModule, UserModule],
+  imports: [TypeOrmModule, RedisModule, MailerModule, HealthModule, AuthModule, UserModule],
   exports: [AppConfig],
   providers: [AppConfig.PROVIDER],
 })

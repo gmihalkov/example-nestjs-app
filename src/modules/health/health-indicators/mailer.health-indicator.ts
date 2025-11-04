@@ -1,14 +1,13 @@
+import { ok } from 'node:assert';
+
 import { Inject, Injectable } from '@nestjs/common';
 import { type HealthIndicatorResult, HealthIndicatorService } from '@nestjs/terminus';
-import type Redis from 'ioredis';
+import type { Transport } from 'nodemailer';
 
-import { InjectRedisClient } from '@/common/redis';
+import { InjectMailer } from '@/common/mailer';
 
-/**
- * The Redis health indicator.
- */
 @Injectable()
-export class RedisHealthIndicator {
+export class MailerHealthIndicator {
   /**
    * The terminus health indicator service.
    */
@@ -16,13 +15,13 @@ export class RedisHealthIndicator {
   private readonly health!: HealthIndicatorService;
 
   /**
-   * The Redis client.
+   * The mailer provider.
    */
-  @InjectRedisClient()
-  private readonly redis!: Redis;
+  @InjectMailer()
+  private readonly mailer!: Transport;
 
   /**
-   * Returns a Redis heath-check status.
+   * Returns a mailer heath-check status.
    *
    * @param key
    * The service key.
@@ -34,10 +33,14 @@ export class RedisHealthIndicator {
     const indicator = this.health.check(key);
 
     try {
-      await this.redis.ping();
+      ok(this.mailer.verify);
+      await this.mailer.verify();
+
       return indicator.up();
-    } catch (_) {
-      return indicator.down();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+
+      return indicator.down({ message });
     }
   }
 }
