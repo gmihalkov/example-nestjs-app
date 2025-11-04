@@ -2,8 +2,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 
-import { MailerModule } from '@/common/mailer';
-
 import { HealthController } from './controllers/health.controller';
 import { MailerHealthIndicator } from './health-indicators/mailer.health-indicator';
 import { RedisHealthIndicator } from './health-indicators/redis.health-indicator';
@@ -13,7 +11,7 @@ import { RedisHealthIndicator } from './health-indicators/redis.health-indicator
  * endpoint that returns a current application availability status.
  */
 @Module({
-  imports: [TerminusModule, HttpModule, MailerModule],
+  imports: [TerminusModule, HttpModule],
   controllers: [HealthController],
   providers: [RedisHealthIndicator, MailerHealthIndicator],
 })

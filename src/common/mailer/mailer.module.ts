@@ -1,4 +1,4 @@
-import { Module, type OnModuleDestroy } from '@nestjs/common';
+import { Global, Module, type OnModuleDestroy } from '@nestjs/common';
 import { createTransport, type Transport } from 'nodemailer';
 
 import { InjectMailer } from './decorators/inject-mailer.decorator';
@@ -6,8 +6,9 @@ import { MailerConfig } from './mailer.config';
 import { MAILER } from './tokens/mailer.token';
 
 /**
- * The module that is responsible for email sending.
+ * The global module that is responsible for email sending.
  */
+@Global()
 @Module({
   providers: [
     MailerConfig.PROVIDER,
