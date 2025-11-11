@@ -4,6 +4,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 
 import { MailerModule } from '@/common/mailer';
 import { RedisModule } from '@/common/redis';
+import { SwaggerModule } from '@/common/swagger';
 import { TypeOrmModule } from '@/common/typeorm';
 import { AuthModule } from '@/modules/auth';
 import { HealthModule } from '@/modules/health';
@@ -15,7 +16,15 @@ import { AppConfig } from './app.config';
  * The main application module.
  */
 @Module({
-  imports: [TypeOrmModule, RedisModule, MailerModule, HealthModule, AuthModule, UserModule],
+  imports: [
+    SwaggerModule,
+    TypeOrmModule,
+    RedisModule,
+    MailerModule,
+    HealthModule,
+    AuthModule,
+    UserModule,
+  ],
   exports: [AppConfig],
   providers: [AppConfig.PROVIDER],
 })
@@ -44,5 +53,10 @@ export class AppModule {
         transform: true,
       }),
     );
+
+    SwaggerModule.initialize(app, {
+      title: 'Example Nest.js App',
+      description: '<p>This is a demo application on Nest.js.</p>',
+    });
   }
 }

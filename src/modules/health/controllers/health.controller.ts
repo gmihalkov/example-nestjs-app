@@ -1,10 +1,13 @@
 import { Controller, Get, Inject } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
+
+import { ApiController } from '@/common/swagger';
 
 import { MailerHealthIndicator } from '../health-indicators/mailer.health-indicator';
 import { RedisHealthIndicator } from '../health-indicators/redis.health-indicator';
@@ -13,6 +16,12 @@ import { RedisHealthIndicator } from '../health-indicators/redis.health-indicato
  * The controller that returns a current health-check status.
  */
 @Controller('/health')
+@ApiController({
+  title: '🩺 Application health-check',
+  description: `
+    <p>Provides a method to check whether the application and its infrastructure are running or not.</p>
+  `.trim(),
+})
 export class HealthController {
   /**
    * The built-in health-check service.
@@ -49,6 +58,26 @@ export class HealthController {
    */
   @Get()
   @HealthCheck()
+  @ApiOperation({
+    summary: 'Check the status',
+    description: `
+      <p>The endpoint returns the overall application status and the detailed statuses of each
+      services on which the application depends.</p>
+      <p>It will return you something like:</p>
+      <pre>
+        {
+          "status": "ok",
+          "info": {
+            "internet-connection": { "status": "up" },
+            "database": { "status":"up" }
+          },
+          "error": {}
+        }
+      </pre>
+      <p>If some of the application's infrastructure is unavailable, its status will be
+      <code>"down"</code></p>
+    `.trim(),
+  })
   public async check(): Promise<unknown> {
     return this.healthCheck.check([
       // Checks if the application is able to send HTTP requests to the external resources.

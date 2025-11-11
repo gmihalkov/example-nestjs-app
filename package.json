@@ -57,6 +57,7 @@
     "@nestjs/core": "^11.1.6",
     "@nestjs/platform-fastify": "^11.1.7",
     "@nestjs/platform-socket.io": "^11.1.7",
+    "@nestjs/swagger": "^11.2.1",
     "@nestjs/terminus": "^11.0.0",
     "@nestjs/testing": "^11.1.6",
     "@nestjs/typeorm": "^11.0.0",
