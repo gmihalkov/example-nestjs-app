@@ -8,7 +8,12 @@ export enum AuthRoute {
   INDEX = '/auth',
 
   /**
-   * The signing up by password route relative path.
+   * The route that starts the signing up by password process.
    */
-  SIGN_UP_BY_PASSWORD = '/sign-up-by-password',
+  SIGN_UP_BY_PASSWORD_START = '/sign-up-by-password',
+
+  /**
+   * The route that verifies and completes the signing up by password process.
+   */
+  SIGN_UP_BY_PASSWORD_VERIFY = '/sign-up-by-password/verify',
 }

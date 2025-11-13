@@ -3,10 +3,10 @@ import { Expose } from 'class-transformer';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 /**
- * The DTO that describes parameters needed to complete the signing up process.
+ * The DTO that describes parameters needed to verify and complete the signing up process.
  */
 @ApiSchema({})
-export class AuthSignUpByPasswordCompleteParamsDto {
+export class AuthSignUpByPasswordVerifyParamsDto {
   /**
    * The username (i.e., email).
    */

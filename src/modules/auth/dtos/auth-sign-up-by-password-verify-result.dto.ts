@@ -1,15 +1,16 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 /**
- * The DTO class describing the signing up by password endpoint's response body.
+ * The DTO class describing the response when the signing up of the new user is verified and
+ * completed.
  */
 @ApiSchema({})
-export class AuthSignUpByPasswordResultDto {
+export class AuthSignUpByPasswordVerifyResultDto {
   /**
    * The issued authorization token.
    */
   @ApiProperty({
     description: 'The token to be inserted into <code>Authorization: Bearer [token]</code>.',
   })
-  public token!: string;
+  public accessToken!: string;
 }

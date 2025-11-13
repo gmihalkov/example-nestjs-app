@@ -1,12 +1,12 @@
-import { Body, Controller, Post, UsePipes } from '@nestjs/common';
-import { ApiCreatedResponse, ApiNoContentResponse, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 
-import { OneOfPipe } from '@/common/nestjs';
-import { ApiBodyOneOf, ApiController } from '@/common/swagger';
+import { ApiController } from '@/common/swagger';
 
-import { AuthSignUpByPasswordCompleteParamsDto as SignUpVerificationParams } from '../dtos/auth-sign-up-by-password-complete-params.dto';
-import { AuthSignUpByPasswordResultDto as SignUpByPasswordResult } from '../dtos/auth-sign-up-by-password-result.dto';
 import { AuthSignUpByPasswordStartParamsDto as SignUpByPasswordStartParams } from '../dtos/auth-sign-up-by-password-start-params.dto';
+import { AuthSignUpByPasswordStartResultDto as SignUpByPasswordStartResult } from '../dtos/auth-sign-up-by-password-start-result.dto';
+import { AuthSignUpByPasswordVerifyParamsDto as SignUpByPasswordVerifyParams } from '../dtos/auth-sign-up-by-password-verify-params.dto';
+import { AuthSignUpByPasswordVerifyResultDto as SignUpByPasswordVerifyResult } from '../dtos/auth-sign-up-by-password-verify-result.dto';
 import { AuthRoute } from '../enums/auth-route.enum';
 
 /**
@@ -16,45 +16,58 @@ import { AuthRoute } from '../enums/auth-route.enum';
 @ApiController({
   title: '🔑 Authentication & Authorization',
   description: `
-    <p>The group of activities related with the user authorization and authentication.</p>
+    <p>The group of activities related with the user authorization and authentication. It contains
+    the endpoints to:</p>
+    <ul>
+      <li>Sign up the new user by the password;</li>
+      <li>Sign in by the password;</li>
+      <li>Prolong the authorization token;</li>
+      <li>Sign out.</li>
+    </ul>
   `.trim(),
 })
 export class AuthController {
   /**
-   * The method that is responsible for signing up the new users.
+   * The endpoint that starts the signing-up process. It takes a username and a desired password,
+   * and sends an email to the user with the verification code.
    */
+  @Post(AuthRoute.SIGN_UP_BY_PASSWORD_START)
   @ApiOperation({
-    summary: 'Sign up by password',
+    summary: 'Start to signing-up by password',
     description: `
-      <p>This endpoint signs up the new user by provided email and password. The process consists of
-      two requests:</p>
-      <ul>
-        <li>The client must send us a username (i.e., email) and the desired password. After
-        this, we send him a verification code.</li>
-        <li>Next, the client must send us that verification code back.</li>
-      </ul>
-      <p>The endpoint serves the both requests. To initialize the process, you need to send an
-      object containing the email and the password. To complete signing up, you need to pass the
-      same email and the verification code sent to that email.</p>
+      <p>This endpoint starts the signing-up of the new user by its password. It takes a username
+      and desired password, and sends to the user the verification code.</p>
+      <p>Next, the user must send us this code back using the
+      <code>${AuthRoute.SIGN_UP_BY_PASSWORD_VERIFY}</code> endpoint.</p>
     `.trim(),
   })
-  @ApiBodyOneOf({
-    types: [SignUpByPasswordStartParams, SignUpVerificationParams],
-  })
-  @ApiNoContentResponse({
-    description: 'Once the email and password were provided, it returns No Content.',
-  })
-  @ApiCreatedResponse({
-    type: SignUpByPasswordResult,
-    description:
-      'Once the email and verification code were provided, it returns an object containing the authorization token.',
-  })
-  @Post(AuthRoute.SIGN_UP_BY_PASSWORD)
-  @UsePipes(new OneOfPipe([SignUpByPasswordStartParams, SignUpVerificationParams]))
-  public async signUpByPassword(
-    @Body() params: SignUpByPasswordStartParams | SignUpVerificationParams,
-  ): Promise<void> {
-    // TODO: Implement.
+  @ApiBody({ type: SignUpByPasswordStartParams })
+  @ApiCreatedResponse({ type: SignUpByPasswordStartResult })
+  public async signUpByPasswordStart(
+    @Body() params: SignUpByPasswordStartParams,
+  ): Promise<SignUpByPasswordStartResult> {
     Boolean(params);
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * The endpoint that verify and completes the signing-up process. It takes the verification code
+   * that we sent to the user, and returns an authorization token.
+   */
+  @Post(AuthRoute.SIGN_UP_BY_PASSWORD_VERIFY)
+  @ApiOperation({
+    summary: 'Verify and complete signing-up by password',
+    description: `
+      <p>This endpoint verifies and completes the signing-up by password process. It takes a
+      verification code that we sent to the user, and returns an authorization token.</p>
+    `.trim(),
+  })
+  @ApiBody({ type: SignUpByPasswordVerifyParams })
+  @ApiCreatedResponse({ type: SignUpByPasswordVerifyResult })
+  public async signUpByPasswordVerify(
+    @Body() params: SignUpByPasswordVerifyParams,
+  ): Promise<SignUpByPasswordVerifyResult> {
+    Boolean(params);
+    throw new Error('Not implemented');
   }
 }

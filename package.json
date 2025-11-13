@@ -18,6 +18,7 @@
     "check:lint": "biome lint",
     "check:dry-run": "run-s \"start --dry-run\"",
     "test": "node -r 'ts-node/register' -r './src/tests/setup.ts' --test ./src/tests/**/*.test.ts",
+    "test-one": "node -r 'ts-node/register' -r './src/tests/setup.ts' --test ./src/tests/${npm_config_name}.test.ts",
     "test-with-coverage": "run-s test-with-coverage:*",
     "test-with-coverage:run": "nyc --reporter=lcov run-s test",
     "test-with-coverage:clean": "del ./.nyc_output ./coverage",
