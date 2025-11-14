@@ -21,4 +21,19 @@ export class ChatHelper {
 
     return undefined;
   }
+
+  /**
+   * Puts the given chat into the current execution context.
+   *
+   * @param context
+   * The execution context.
+   *
+   * @param chat
+   * The chat to be stored.
+   */
+  public static putToContext(context: ExecutionContext, chat: ChatModel): void {
+    // TODO: Implement.
+    Boolean(context);
+    Boolean(chat);
+  }
 }
