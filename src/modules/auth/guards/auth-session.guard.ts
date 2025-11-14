@@ -88,6 +88,12 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
         return !required;
       }
 
+      const user = await session.user;
+
+      if (!user.isActive) {
+        return !required;
+      }
+
       this.saveSession(context, session);
 
       return true;
