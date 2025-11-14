@@ -34,6 +34,7 @@ export class ChatModel {
   @Column({
     comment: 'The time when the chat was ended.',
     name: 'ended_at',
+    nullable: true,
   })
   public endedAt?: Date;
 

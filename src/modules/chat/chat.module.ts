@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 
+import { ChatController } from './controllers/chat.controller';
+
 /**
  * The module that is responsible for chat management.
  */
-@Module({})
+@Module({
+  controllers: [ChatController],
+})
 export class ChatModule {}

@@ -7,6 +7,7 @@ import { RedisModule } from '@/common/redis';
 import { SwaggerModule } from '@/common/swagger';
 import { TypeOrmModule } from '@/common/typeorm';
 import { AuthModule } from '@/modules/auth';
+import { ChatModule } from '@/modules/chat';
 import { HealthModule } from '@/modules/health';
 import { UserModule } from '@/modules/user';
 
@@ -24,6 +25,7 @@ import { AppConfig } from './app.config';
     HealthModule,
     AuthModule,
     UserModule,
+    ChatModule,
   ],
   exports: [AppConfig],
   providers: [AppConfig.PROVIDER],
