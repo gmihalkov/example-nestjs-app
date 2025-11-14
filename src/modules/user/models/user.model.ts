@@ -14,7 +14,6 @@ export class UserModel {
   @PrimaryGeneratedColumn({
     comment: 'The unique user ID.',
     name: 'id',
-    type: 'integer',
   })
   public id!: number;
 }

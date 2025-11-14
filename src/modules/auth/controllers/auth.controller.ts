@@ -19,8 +19,8 @@ import { AuthRoute } from '../enums/auth-route.enum';
     <p>The group of activities related with the user authorization and authentication. It contains
     the endpoints to:</p>
     <ul>
-      <li>Sign up the new user by the password;</li>
-      <li>Sign in by the password;</li>
+      <li>Sign up;</li>
+      <li>Sign in;</li>
       <li>Prolong the authorization token;</li>
       <li>Sign out.</li>
     </ul>
@@ -33,11 +33,11 @@ export class AuthController {
    */
   @Post(AuthRoute.SIGN_UP_BY_PASSWORD_START)
   @ApiOperation({
-    summary: 'Start to signing-up by password',
+    summary: 'Start sign-up by password',
     description: `
-      <p>This endpoint starts the signing-up of the new user by its password. It takes a username
-      and desired password, and sends to the user the verification code.</p>
-      <p>Next, the user must send us this code back using the
+      <p>This endpoint starts sign-up by password. It takes a username and desired password, and
+      sends to the user the verification email.</p>
+      <p>Next, the user must send us the token from the email back using the
       <code>${AuthRoute.SIGN_UP_BY_PASSWORD_VERIFY}</code> endpoint.</p>
     `.trim(),
   })
@@ -56,10 +56,10 @@ export class AuthController {
    */
   @Post(AuthRoute.SIGN_UP_BY_PASSWORD_VERIFY)
   @ApiOperation({
-    summary: 'Verify and complete signing-up by password',
+    summary: 'Verify and complete sign-up by password',
     description: `
-      <p>This endpoint verifies and completes the signing-up by password process. It takes a
-      verification code that we sent to the user, and returns an authorization token.</p>
+      <p>This endpoint verifies and completes sign-up by password. It takes a verification code
+      that we sent to the user, and returns an authorization token.</p>
     `.trim(),
   })
   @ApiBody({ type: SignUpByPasswordVerifyParams })
