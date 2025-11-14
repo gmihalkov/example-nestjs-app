@@ -34,4 +34,22 @@ export class UserModel {
     name: 'password',
   })
   public password!: string;
+
+  /**
+   * Indicates that the user is active.
+   */
+  @Column({
+    comment: 'Indicates that the user is active.',
+    name: 'is_active',
+  })
+  public isActive!: boolean;
+
+  /**
+   * Indicates that the user is a root user.
+   */
+  @Column({
+    comment: 'Indicates that the user is a root user.',
+    name: 'is_root',
+  })
+  public isRoot!: boolean;
 }
