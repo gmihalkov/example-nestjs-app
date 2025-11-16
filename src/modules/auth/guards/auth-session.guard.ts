@@ -1,14 +1,21 @@
+import { createHash } from 'node:crypto';
+
 import {
   type CanActivate,
   type ExecutionContext,
+  Inject,
   Injectable,
   mixin,
   type Type,
 } from '@nestjs/common';
+import type { FastifyRequest } from 'fastify';
+import type { Socket } from 'socket.io';
 
-import type { AuthTokenDto } from '../dtos/auth-token.dto';
+import { AuthConfig } from '../auth.config';
+import { AuthTokenDto } from '../dtos/auth-token.dto';
 import { AuthSessionHelper } from '../helpers/auth-session.helper';
 import type { AuthSessionModel } from '../models/auth-session.model';
+import { AuthSessionService } from '../services/auth-session.service';
 
 /**
  * Describes options to configure the guard.
@@ -42,6 +49,18 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
 
   @Injectable()
   class AuthSessionMixin implements CanActivate {
+    /**
+     * The module configuration.
+     */
+    @Inject(AuthConfig)
+    private readonly config!: AuthConfig;
+
+    /**
+     * The session service.
+     */
+    @Inject(AuthSessionService)
+    private readonly service!: AuthSessionService;
+
     /**
      * @inheritdoc
      */
@@ -126,10 +145,25 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
      * context.
      */
     private getAuthorization(context: ExecutionContext): string | undefined {
-      // TODO: Implement.
-      Boolean(context);
+      const type = context.getType();
 
-      return '';
+      switch (type) {
+        case 'http': {
+          const request: FastifyRequest = context.switchToHttp().getRequest();
+
+          return request.headers.authorization || undefined;
+        }
+
+        case 'ws': {
+          const socket: Socket = context.switchToWs().getClient();
+
+          return socket.handshake.headers.authorization || undefined;
+        }
+
+        default: {
+          throw new Error(`${type} is not supported`);
+        }
+      }
     }
 
     /**
@@ -142,10 +176,10 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
      * A token or `undefined`, if the authorization string is invalid.
      */
     private parseAuthorization(authorization: string): string | undefined {
-      // TODO: Implement.
-      Boolean(authorization);
+      const regexp = /^Bearer (.+)$/g;
+      const groups = regexp.exec(authorization);
 
-      return undefined;
+      return groups?.[1] || undefined;
     }
 
     /**
@@ -158,10 +192,7 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
      * A payload DTO or `undefined` if the JWT is invalid.
      */
     private parseJwt(jwt: string): AuthTokenDto | undefined {
-      // TODO: Implement.
-      Boolean(jwt);
-
-      return undefined;
+      return AuthTokenDto.decode(jwt, this.config.tokenSignature);
     }
 
     /**
@@ -179,12 +210,8 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
     private async findSession(
       token: AuthTokenDto,
       currentTime: Date,
-    ): Promise<AuthSessionModel | undefined> {
-      // TODO: Implement.
-      Boolean(token);
-      Boolean(currentTime);
-
-      return undefined;
+    ): Promise<AuthSessionModel | null> {
+      return this.service.findActiveById(token.sub, currentTime);
     }
 
     /**
@@ -197,10 +224,25 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
      * An `User-Agent` or `undefined` if it's not set or empty.
      */
     private getUserAgent(context: ExecutionContext): string | undefined {
-      // TODO: Implement.
-      Boolean(context);
+      const type = context.getType();
 
-      return undefined;
+      switch (type) {
+        case 'http': {
+          const request: FastifyRequest = context.switchToHttp().getRequest();
+
+          return request.headers['user-agent'] || undefined;
+        }
+
+        case 'ws': {
+          const socket: Socket = context.switchToWs().getClient();
+
+          return socket.handshake.headers['user-agent'] || undefined;
+        }
+
+        default: {
+          throw new Error(`${type} is not supported`);
+        }
+      }
     }
 
     /**
@@ -213,10 +255,7 @@ export const AuthSessionGuard = (options: Options = {}): Type<CanActivate> => {
      * A device fingerprint.
      */
     private getDevice(userAgent: string): string {
-      // TODO: Implement.
-      Boolean(userAgent);
-
-      return '';
+      return createHash('sha256').update(userAgent).digest('hex');
     }
 
     /**
